@@ -1,7 +1,50 @@
+import { useState } from "react";
+import useAuth from "../../hooks/useAuth";
+
+import { imageUpload } from "../api/utils";
+import { TbFidgetSpinner } from "react-icons/tb";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
+
 const AddPlantForm = () => {
+  const axiosSecure=useAxiosSecure()
+  const [upload,seatUploadimg]=useState(null)
+  const [loading ,setLoading]=useState(false)
+  const {user}=useAuth()
+  const handleSubmit=async (e)=>{
+    setLoading(true)
+    e.preventDefault();
+    const form = e.target;
+ const name=form.name.value
+ const category=form.category.value
+ const description=form.description.value
+ const price=parseFloat(form.price.value)
+ const quantity=parseInt(form.quantity.value)
+
+const plantphoto=await imageUpload(upload)
+const sellerInf={ displayName:user?.displayName,
+  photoURL:user?.photoURL,
+  email:user?.email
+}
+ const plants={name,category,description,price,quantity,plantphoto,sellerInf}
+ console.log(plants)
+ try {
+  const { data } = await axiosSecure.post('/plants', plants);
+  toast.success('Plant added successfully!');
+  form.reset(); // Resets the form fields
+ seatUploadimg(null); // Resets the upload state if needed
+}
+catch(err){
+console.log(err)
+}
+finally{
+  setLoading(false)
+}
+
+  }
   return (
     <div className='w-full min-h-[calc(100vh-40px)] flex flex-col justify-center items-center text-gray-800 rounded-xl bg-gray-50'>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-10'>
           <div className='space-y-6'>
             {/* Name */}
@@ -87,6 +130,7 @@ const AddPlantForm = () => {
                 <div className='flex flex-col w-max mx-auto text-center'>
                   <label>
                     <input
+                    onChange={(e) => seatUploadimg(e.target.files[0])}
                       className='text-sm cursor-pointer w-36 hidden'
                       type='file'
                       name='image'
@@ -95,19 +139,37 @@ const AddPlantForm = () => {
                       hidden
                     />
                     <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
-                      Upload
+                    {upload?.name.slice(0, 20) || "Upload Image"}
+                    
                     </div>
                   </label>
                 </div>
               </div>
             </div>
+            {upload && (
+  <div className="mt-4">
+    <img
+      src={URL.createObjectURL(upload)}
+      alt="Preview"
+      className="w-20 h-20 object-cover rounded-lg"
+    />
+    <p className="mt-2 text-sm text-gray-500">
+      Image Size: {(upload.size / 1024).toFixed(2)} KB
+    </p>
+  </div>
+)}
 
             {/* Submit Button */}
+    
             <button
               type='submit'
               className='w-full p-3 mt-5 text-center font-medium text-white transition duration-200 rounded shadow-md bg-lime-500 '
             >
-              Save & Continue
+             {loading ? (
+                <TbFidgetSpinner className='animate-spin m-auto' />
+              ) : (
+                'Continue'
+              )}
             </button>
           </div>
         </div>

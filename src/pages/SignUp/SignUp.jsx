@@ -3,6 +3,8 @@ import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../../hooks/useAuth'
 import { toast } from 'react-hot-toast'
 import { TbFidgetSpinner } from 'react-icons/tb'
+import axios from 'axios'
+import { imageUpload } from '../../components/api/utils'
 
 const SignUp = () => {
   const { createUser, updateUserProfile, signInWithGoogle, loading } = useAuth()
@@ -14,6 +16,11 @@ const SignUp = () => {
     const name = form.name.value
     const email = form.email.value
     const password = form.password.value
+    const image=form.image.files[0]
+
+// get img 
+const photourl=await imageUpload(image)
+
 
     try {
       //2. User Registration
@@ -22,7 +29,7 @@ const SignUp = () => {
       //3. Save username & profile photo
       await updateUserProfile(
         name,
-        'https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c'
+        photourl
       )
       console.log(result)
 
@@ -67,6 +74,7 @@ const SignUp = () => {
               </label>
               <input
                 type='text'
+                required
                 name='name'
                 id='name'
                 placeholder='Enter Your Name Here'
@@ -84,6 +92,7 @@ const SignUp = () => {
                 id='image'
                 name='image'
                 accept='image/*'
+              
               />
             </div>
             <div>

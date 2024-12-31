@@ -1,7 +1,5 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Dashboard/Sidebar/Sidebar'
-import useAuth from '../hooks/useAuth'
-import { AuthContext } from '../providers/AuthProvider'
 
 const DashboardLayout = () => {
 
