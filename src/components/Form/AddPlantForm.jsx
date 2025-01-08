@@ -5,8 +5,10 @@ import { imageUpload } from "../api/utils";
 import { TbFidgetSpinner } from "react-icons/tb";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const AddPlantForm = () => {
+  const navigate=useNavigate()
   const axiosSecure=useAxiosSecure()
   const [upload,seatUploadimg]=useState(null)
   const [loading ,setLoading]=useState(false)
@@ -31,6 +33,7 @@ const sellerInf={ displayName:user?.displayName,
  try {
   const { data } = await axiosSecure.post('/plants', plants);
   toast.success('Plant added successfully!');
+  navigate('/dashboard/my-inventory')
   form.reset(); // Resets the form fields
  seatUploadimg(null); // Resets the upload state if needed
 }
@@ -140,6 +143,9 @@ finally{
                     />
                     <div className='bg-lime-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-lime-500'>
                     {upload?.name.slice(0, 20) || "Upload Image"}
+                    
+                   
+                    
                     
                     </div>
                   </label>
